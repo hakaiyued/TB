@@ -1,0 +1,85 @@
+<?xml version="1.0" ?>
+<mujoco>
+  <compiler autolimits="true"/>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1=".1 .2 .3" rgb2=".2 .3 .4"/>
+    <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance=".2"/>
+  </asset>
+
+  <default>
+    <!-- python binding has no the actuatorfrcrange attribute -->
+    <joint damping=".03" actuatorfrcrange="-0.5 0.5"/>
+    <default class="station">
+      <geom type="cylinder" size="0.05 0.025" rgba="0.1 0.1 0.1 1"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <geom type="plane" size="0.5 0.5 0.01" material="grid" pos="0.5 0.5 0"/>
+    <light name="top light" pos="0.5 0.5 4" diffuse="0.8 0.8 0.8"/>
+
+    <!-- fixed stations -->
+    <body name="MTF" pos="0.625 0.1 0.05">
+      <geom class="station" pos="0 0 -0.025"/>
+    </body>
+    <body name="A" pos="0.375 0.1 0.05">
+      <geom class="station" pos="0 0 -0.025"/>
+    </body>
+    <body name="D" pos="0.125 0.1 0.05">
+      <geom class="station" pos="0 0 -0.025"/>
+    </body>
+
+    <!-- movable_bearer -->
+    <body name="x2_bearer" pos="0.875 0.1 0.1">
+      <geom pos="0 0 -0.05" type="cylinder" size="0.01 0.05" rgba="0.1 0.1 0.8 1"/> <!-- on the top -->
+      <joint name="x2_bearer" type="slide" axis="0 1 0"/>
+    </body>
+    <body name="x3_bearer" pos="0.125 0.1 0.3">
+      <geom pos="0 0 0.025" type="cylinder" size="0.01 0.025" rgba="0.1 0.1 0.8 1"/> <!-- on the bottom -->
+      <joint name="x3_bearer_Y" type="slide" axis="0 1 0"/>
+      <joint name="x3_bearer_Z" type="slide" axis="0 0 1"/>
+      <joint name="x3_bearer_R" type="hinge" axis="0 1 0" pos="0 0 0.05"/>
+    </body>
+
+    <!-- gantry -->
+    <body name="gantry" pos="0.5 0.1 0.3">
+      <geom pos="0 0 0.05" type="cylinder" size="0.01 0.05" rgba="0.5 0.5 0.5 1"/>
+      <joint name="gantry_X" type="slide" axis="1 0 0"/>
+      <joint name="gantry_Z" type="slide" axis="0 0 1"/>
+      <geom pos="-0.25 0 0.05" type="cylinder" size="0.01 0.05" rgba="0.5 0.5 0.5 1"/>
+      <geom pos="0.25 0 0.05" type="cylinder" size="0.01 0.05" rgba="0.5 0.5 0.5 1"/>
+    </body>
+
+    <!-- T-bar -->
+    <body name="T_bar" pos="0.5 0.5 0.3">
+      <geom pos="0 0 0.011" type="box" size="0.025 0.01 0.01" rgba="0.1 0.8 0.1 1"/>
+      <joint name="T_bar_X" type="slide" axis="1 0 0"/>
+      <joint name="T_bar_Y" type="slide" axis="0 1 0"/>
+      <joint name="T_bar_Z" type="slide" axis="0 0 1"/>
+      <body name="suction_A" pos="0.015 0 0">
+        <geom pos="0 0 0.005" type="cylinder" size="0.01 0.005" rgba="0.5 0.5 0.1 1"/>
+      </body>
+      <body name="suction_B" pos="-0.015 0 0">
+        <geom pos="0 0 0.005" type="cylinder" size="0.01 0.005" rgba="0.5 0.5 0.1 1"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="x2_bearer" joint="x2_bearer" ctrlrange="0 0.5" kp="10"/>
+    <position name="x3_bearer_Y" joint="x3_bearer_Y" ctrlrange="0 0.5" kp="10"/>
+    <position name="x3_bearer_Z" joint="x3_bearer_Z" ctrlrange="-0.3 0.3" kp="10"/>
+    <position name="x3_bearer_R" joint="x3_bearer_R" ctrlrange="0 3.14" kp="10"/>
+    <position name="gantry_X" joint="gantry_X" ctrlrange="-0.5 0.5" kp="10"/>
+    <position name="gantry_Z" joint="gantry_Z" ctrlrange="-0.3 0.3" kp="10"/>
+    <position name="T_bar_X" joint="T_bar_X" ctrlrange="-0.5 0.5" kp="10"/>
+    <position name="T_bar_Y" joint="T_bar_Y" ctrlrange="-0.5 0.5" kp="10"/>
+    <position name="T_bar_Z" joint="T_bar_Z" ctrlrange="-0.3 0.3" kp="10"/>
+    <adhesion name="suction_A" body="suction_A" ctrlrange="0 1" gain="5"/>
+    <adhesion name="suction_B" body="suction_B" ctrlrange="0 1" gain="5"/>
+  </actuator>
+
+  <sensor>
+  </sensor>
+</mujoco>
